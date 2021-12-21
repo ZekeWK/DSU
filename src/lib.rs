@@ -11,9 +11,7 @@ mod tests {
 
     #[test]
     fn union() {
-        let mut  dsu = DSU::new();
-
-        dsu.append(10);
+        let mut  dsu = DSU::new(10);
 
         dsu.union(0, 1);
         dsu.union(1, 2);

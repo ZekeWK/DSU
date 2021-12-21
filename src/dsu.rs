@@ -3,8 +3,14 @@ pub struct DSU {
 }
 
 impl DSU {
-    pub fn new() -> DSU {
+    pub fn default() -> DSU {
         DSU{parents : Vec::new()}
+    }
+
+    pub fn new(count : usize) -> DSU{
+        let mut dsu = DSU::with_capacity(count);
+        dsu.append(count);
+        dsu
     }
 
     pub fn with_capacity(capacity : usize) -> DSU {
