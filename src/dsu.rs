@@ -1,3 +1,4 @@
+#[derive(Debug, Default, Clone)]
 pub struct DSU <T, F> where T : Default, F : Fn(T, T) -> T {
     parents : Vec<usize>,
     data : Vec<T>,
