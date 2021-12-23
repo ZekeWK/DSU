@@ -3,19 +3,16 @@ pub struct DSU <T, F> where T : Default, F : Fn(T, T) -> T {
     parents : Vec<usize>,
     data : Vec<T>,
     union_func : F,
+    size : Vec<usize>,
 }
 
 impl <T, F> DSU<T, F> where T : Default, F : Fn(T, T) -> T {
     pub fn new(union_func : F) -> DSU<T, F> {
-        DSU{parents : Vec::new(), data : Vec::new(), union_func : union_func}
+        DSU{parents : Vec::new(), data : Vec::new(), union_func : union_func, size : Vec::new()}
     }
     
     pub fn with_capacity(union_func : F, capacity : usize,) -> DSU<T, F> {
-        DSU{parents : Vec::with_capacity(capacity), data : Vec::with_capacity(capacity), union_func : union_func}
-    }
-    
-    pub fn from(parents : Vec<usize>, data : Vec<T>, union_func : F) -> DSU<T, F> {
-        DSU{parents : parents, data : data, union_func : union_func}
+        DSU{parents : Vec::with_capacity(capacity), data : Vec::with_capacity(capacity), union_func : union_func, size : Vec::with_capacity(capacity)}
     }
     
     pub fn len(&self) -> usize {
@@ -26,6 +23,7 @@ impl <T, F> DSU<T, F> where T : Default, F : Fn(T, T) -> T {
         let len = self.len();
         self.parents.push(len);
         self.data.push(data);
+        self.size.push(1);
         len
     }
     
@@ -40,19 +38,33 @@ impl <T, F> DSU<T, F> where T : Default, F : Fn(T, T) -> T {
     }
     
     pub(crate) fn set_data(&mut self, node : usize, data : T) {
+        debug_assert!(node < self.len());
         self.data[node] = data;
     }
     
     pub fn get_data_mut(&mut self, node : usize) -> &mut T {
+        debug_assert!(node < self.len());
         &mut self.data[node]
     }
     
     pub(crate) fn get_data(&self, node : usize) -> &T {
+        debug_assert!(node < self.len());
         &self.data[node]
     }
 
     pub(crate) fn take_data(&mut self, node : usize) -> T {
+        debug_assert!(node < self.len());
         std::mem::take(self.get_data_mut(node))
+    }
+
+    pub(crate) fn get_size(&self, node : usize) -> usize {
+        debug_assert!(node < self.len());
+        self.size[node]
+    }
+
+    pub(crate) fn set_size(&mut self, node : usize, size : usize) {
+        debug_assert!(node < self.len());
+        self.size[node] = size;
     }
     
     pub fn top(&self, node : usize) -> usize {
@@ -85,8 +97,23 @@ impl <T, F> DSU<T, F> where T : Default, F : Fn(T, T) -> T {
         let data1 = self.take_data(top1);
 
         let data_new = (self.union_func)(data0, data1);
+
+        let size0 = self.get_size(top0);
+        let size1 = self.get_size(top1);
+        let size_new = size0 + size1;
         
-        self.set_data(top0, data_new);
-        self.set_parent(top1, top0);
+        if size0 <= size1 {//TODO add with union + push a size aswell
+            self.set_data(top0, data_new);
+            self.set_size(top0, size_new);
+
+            self.set_parent(top1, top0);
+        }
+
+        else {
+            self.set_data(top1, data_new);
+            self.set_size(top1, size_new);
+            
+            self.set_parent(top0, top1);
+        }
     }
 }
