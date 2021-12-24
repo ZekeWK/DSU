@@ -102,7 +102,7 @@ impl <T, F> DSU<T, F> where T : Default, F : Fn(T, T) -> T {
         let size1 = self.get_size(top1);
         let size_new = size0 + size1;
         
-        if size0 <= size1 {//TODO add with union + push a size aswell
+        if size0 >= size1 {//TODO add with union + push a size aswell
             self.set_data(top0, data_new);
             self.set_size(top0, size_new);
 
