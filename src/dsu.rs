@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 #[derive(Debug, Default, Clone)]
 pub struct DSU <T, F> where T : Default, F : Fn(T, T) -> T {
     parents : Vec<usize>,
@@ -8,11 +9,11 @@ pub struct DSU <T, F> where T : Default, F : Fn(T, T) -> T {
 
 impl <T, F> DSU<T, F> where T : Default, F : Fn(T, T) -> T {
     pub fn new(union_func : F) -> DSU<T, F> {
-        DSU{parents : Vec::new(), data : Vec::new(), union_func : union_func, size : Vec::new()}
+        DSU{parents : Vec::new(), data : Vec::new(), union_func, size : Vec::new()}
     }
     
     pub fn with_capacity(union_func : F, capacity : usize,) -> DSU<T, F> {
-        DSU{parents : Vec::with_capacity(capacity), data : Vec::with_capacity(capacity), union_func : union_func, size : Vec::with_capacity(capacity)}
+        DSU{parents : Vec::with_capacity(capacity), data : Vec::with_capacity(capacity), union_func, size : Vec::with_capacity(capacity)}
     }
     
     pub fn len(&self) -> usize {
